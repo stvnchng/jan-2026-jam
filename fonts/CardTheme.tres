@@ -3,5 +3,6 @@
 [ext_resource type="FontFile" uid="uid://b5c3hndt1blat" path="res://fonts/Inter-VariableFont_opsz,wght.ttf" id="1_75twi"]
 
 [resource]
+Label/colors/font_color = Color(0, 0, 0, 1)
 Label/font_sizes/font_size = 22
 Label/fonts/font = ExtResource("1_75twi")

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://dhgt6dmwkukb8"]
+
+[ext_resource type="Script" uid="uid://dxpga0b7joahx" path="res://components/ProfileDeck.gd" id="1_6fc5h"]
+[ext_resource type="PackedScene" uid="uid://bfmg4pd13rr4k" path="res://components/ProfileCard.tscn" id="2_cr5s4"]
+
+[node name="ProfileDeck" type="Control"]
+custom_minimum_size = Vector2(1000, 800)
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -500.0
+offset_top = -800.0
+offset_right = 500.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_6fc5h")
+card_scn = ExtResource("2_cr5s4")
