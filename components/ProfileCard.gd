@@ -14,14 +14,15 @@ var profile_data: ProfileData
 func _ready():
 	original_style = get_theme_stylebox("panel").duplicate()
 	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)	
-	set_info(_gen_rand_profile())
+	mouse_exited.connect(_on_mouse_exited)
+	profile_data = _gen_rand_profile()
+	set_info()
 
-func set_info(data: ProfileData):
-	name_lbl.text = data.get_title_f()
-	height_lbl.text = data.get_height_f()
-	weight_lbl.text = data.get_weight_f()
-	hobbies.text = data.get_hobbies_f()
+func set_info():
+	name_lbl.text = profile_data.get_title_f()
+	height_lbl.text = profile_data.get_height_f()
+	weight_lbl.text = profile_data.get_weight_f()
+	hobbies.text = profile_data.get_hobbies_f()
 
 func lift_card(up: bool):
 	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
