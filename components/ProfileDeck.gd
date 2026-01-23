@@ -34,7 +34,7 @@ func layout_cards():
 		var card = cards[i]
 		var target_pos = Vector2(i * overlap_amount, 0)
 
-		var tween = create_tween().set_trans(Tween.TRANS_BACK)
+		var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "position", target_pos, 1)
 		card.z_index = i
 		card.base_pos = target_pos
