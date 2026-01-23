@@ -7,6 +7,18 @@ class_name ProfileData
 @export var weight_kg: int = 70
 @export var hobbies: Array = [Hobby.CRYPTO, Hobby.GAMBLING, Hobby.MATCHA_LATTE, Hobby.DEBATING]
 
+@export_category("Preferences")
+@export var min_age: int = 23
+@export var max_age: int = 27
+@export var age_negotiable: bool = true
+@export var min_height: int = 168
+@export var max_height: int = 195
+@export var height_negotiable: bool = false
+@export var min_weight: int = 60
+@export var max_weight: int = 90
+@export var weight_negotiable: bool = true
+@export var dealbreaker_hobbies: Array = [Hobby.CRYPTO, Hobby.GAMBLING]
+
 func get_title_f():
 	return profile_name + ", " + str(age)
 
