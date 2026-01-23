@@ -9,7 +9,6 @@ var card_count: int = 10
 var cards: Array[ProfileCard] = []
 
 func _ready():
-#	TODO use CardData data model, use generator func to instantiate data
 	instance_cards()
 	await get_tree().process_frame
 	layout_cards()
@@ -20,10 +19,11 @@ func instance_cards():
 
 	for i in card_count:
 		var card: ProfileCard = card_scn.instantiate()
-#		TODO set data on card when data available
 		cards.append(card)
 		add_child(card)
 
+func get_selected_cards():
+	return cards.filter(func(card: ProfileCard): return card.is_active)
 
 func layout_cards():
 	var total_width = (cards.size() - 1) * overlap_amount + CARD_WIDTH
