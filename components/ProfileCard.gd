@@ -28,9 +28,9 @@ func lift_card(up: bool):
 	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if up:
 		z_index = 100
-		tween.tween_property(self, "position:y", -30, 0.2)
-		tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.2)
-		tween.tween_property(self, "rotation_degrees", 2.0, 0.2)
+		tween.tween_property(self, "position:y", -35, 0.2)
+		tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.2)
+		tween.tween_property(self, "rotation_degrees", 3.0, 0.2)
 	else:
 		z_index = get_index()
 		tween.tween_property(self, "position:y", 0, 0.2)
@@ -55,10 +55,11 @@ func _gui_input(event):
 
 func toggle_select():
 	is_active = !is_active
-	var tween = create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 	if is_active:
 		z_index = 200
-		tween.tween_property(self, "position:y", -200, 0.4)
+		tween.tween_property(self, "position:y", -500, 0.4)
+		tween.tween_property(self, "rotation_degrees", 0.0, 0.2)
 		var sb = original_style.duplicate()
 		if sb is StyleBoxFlat:
 			sb.border_color = Color.GOLD

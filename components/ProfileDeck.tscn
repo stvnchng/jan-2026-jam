@@ -4,16 +4,16 @@
 [ext_resource type="PackedScene" uid="uid://bfmg4pd13rr4k" path="res://components/ProfileCard.tscn" id="2_cr5s4"]
 
 [node name="ProfileDeck" type="Control"]
-custom_minimum_size = Vector2(1000, 800)
+custom_minimum_size = Vector2(800, 500)
 layout_mode = 3
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -500.0
-offset_top = -800.0
-offset_right = 500.0
+offset_left = -400.0
+offset_top = -500.0
+offset_right = 400.0
 grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("1_6fc5h")
