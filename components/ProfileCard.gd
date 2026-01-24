@@ -5,6 +5,8 @@ class_name ProfileCard
 @onready var height_lbl: Label = $Margin/VBox/Height
 @onready var weight_lbl: Label = $Margin/VBox/Weight
 @onready var hobbies: Label = $Margin/VBox/Hobbies
+@onready var smokes_lbl: Label = $Margin/VBox/Smokes
+@onready var drinks_lbl: Label = $Margin/VBox/Drinks
 
 var base_pos: Vector2
 var is_active := false
@@ -23,19 +25,27 @@ func set_info():
 	height_lbl.text = profile_data.get_height_f()
 	weight_lbl.text = profile_data.get_weight_f()
 	hobbies.text = profile_data.get_hobbies_f()
+	smokes_lbl.text = profile_data.get_smokes_f()
+	drinks_lbl.text = profile_data.get_drinks_f()
 
 func lift_card(up: bool):
 	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	var current_style = get_theme_stylebox("panel").duplicate()
+	add_theme_stylebox_override("panel", current_style)
 	if up:
 		z_index = 100
 		tween.tween_property(self, "position:y", -35, 0.2)
 		tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.2)
 		tween.tween_property(self, "rotation_degrees", 3.0, 0.2)
+		tween.tween_property(current_style, "shadow_size", 12, 0.2)
+		tween.tween_property(current_style, "shadow_offset", Vector2(0, 10), 0.2)
 	else:
 		z_index = get_index()
 		tween.tween_property(self, "position:y", 0, 0.2)
 		tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
 		tween.tween_property(self, "rotation_degrees", 0.0, 0.2)
+		tween.tween_property(current_style, "shadow_size", 2, 0.2)
+		tween.tween_property(current_style, "shadow_offset", Vector2(0, 2), 0.2)
 
 func _gen_rand_profile() -> ProfileData:
 	var p_data = ProfileData.new()
@@ -45,6 +55,8 @@ func _gen_rand_profile() -> ProfileData:
 	var rand_hobbies = ProfileData.Hobby.values().duplicate()
 	rand_hobbies.shuffle()
 	p_data.hobbies = rand_hobbies.slice(0, 4)
+	p_data.smokes = ProfileData.Habit.values().pick_random()
+	p_data.drinks = ProfileData.Habit.values().pick_random()
 	return p_data
 
 func _gui_input(event):
