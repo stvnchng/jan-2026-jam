@@ -1,6 +1,8 @@
 extends Panel
 class_name ProfileCard
 
+signal selected(card_ref: ProfileCard)
+
 @onready var name_lbl: Label = $Margin/VBox/Name
 @onready var height_lbl: Label = $Margin/VBox/Height
 @onready var weight_lbl: Label = $Margin/VBox/Weight
@@ -65,15 +67,11 @@ func _gui_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.is_pressed():
-				toggle_select()
+				selected.emit(self)
 
-func toggle_select():
-	is_active = !is_active
-	var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+func update_selection_visuals(active: bool):
+	is_active = active
 	if is_active:
-		z_index = 200
-		tween.tween_property(self, "position:y", -500, 0.4)
-		tween.tween_property(self, "rotation_degrees", 0.0, 0.2)
 		var sb = original_style.duplicate()
 		if sb is StyleBoxFlat:
 			sb.border_color = Color.GOLD
@@ -81,7 +79,6 @@ func toggle_select():
 	else:
 		remove_theme_stylebox_override("panel")
 		add_theme_stylebox_override("panel", original_style.duplicate())
-		lift_card(false)
 
 func _on_mouse_entered():
 	if is_active: return

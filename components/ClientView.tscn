@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://k0ltxbw6fp0j"]
+[gd_scene load_steps=5 format=3 uid="uid://k0ltxbw6fp0j"]
 
 [ext_resource type="Script" uid="uid://cjpgl6avb4qbi" path="res://components/ClientView.gd" id="1_2uwpf"]
+[ext_resource type="FontFile" uid="uid://cj4l765pfodhb" path="res://fonts/PlayfairDisplay-VariableFont_wght.ttf" id="2_4bsn5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb48q"]
 content_margin_left = 0.0
@@ -13,6 +14,13 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
+
+[sub_resource type="FontVariation" id="FontVariation_6fqnv"]
+base_font = ExtResource("2_4bsn5")
+variation_opentype = {
+1869640570: 14,
+2003265652: 600
+}
 
 [node name="ClientPanel" type="Panel"]
 custom_minimum_size = Vector2(400, 1000)
@@ -36,11 +44,14 @@ theme_override_constants/margin_bottom = 24
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
+theme_override_constants/separation = 12
 
 [node name="ProfileSummary" type="RichTextLabel" parent="Margin/VBox"]
 layout_mode = 2
+theme_override_fonts/bold_font = SubResource("FontVariation_6fqnv")
 bbcode_enabled = true
 fit_content = true
 
 [node name="PrefList" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 8

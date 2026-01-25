@@ -33,7 +33,6 @@ func _process(delta: float):
 		if time_left > 10.0:
 			time_label.text = "%ds" % ceil(time_left)
 		else:
-			client_view.position.x = randf_range(-1, 1)
 			time_label.text = "%0.1fs" % time_left
 		var ratio = time_left / round_time
 		if ratio > 0.5:
@@ -45,7 +44,10 @@ func _process(delta: float):
 		_on_timer_out()
 	var count = deck.get_selected_cards().size()
 	if count > 0:
-		submit_button.text = "Send %d Candidates" % count
+		if count == 5:
+			submit_button.text = "Send %d Candidates (MAX)" % count
+		else:
+			submit_button.text = "Send %d Candidates" % count
 		submit_button.disabled = false
 	else:
 		submit_button.text = "Select Candidates"

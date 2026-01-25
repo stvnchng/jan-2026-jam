@@ -5,11 +5,7 @@ class_name ClientView
 @onready var pref_list = $Margin/VBox/PrefList
 
 func setup(data: ProfileData):
-	profile_lbl.text = "[center][font_size=24][b]%s[/b][/font_size]\n[color=gray]%s | %s[/color][/center]" % [
-		data.get_title_f(),
-		data.get_drinks_f(), 
-		data.get_smokes_f()
-	]
+	profile_lbl.text = "[wave rate=5.0 level=5][font_size=32][b]%s[/b][/font_size][/wave]" % data.get_title_f()
 	
 	for child in pref_list.get_children():
 		child.queue_free()
@@ -29,18 +25,39 @@ func setup(data: ProfileData):
 	if !data.dislikes.is_empty():
 		_add_pref_line("Personal Aversions", _format_hobbies(data.dislikes), false, Color.GOLD)
 
+	_add_pref_line(data.get_smokes_f(), "", !data.smokers_welcome, Color.TOMATO if !data.smokers_welcome else Color.WHITE)
+	_add_pref_line(data.get_drinks_f(), "", !data.alcoholics_welcome, Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
+
 func _format_hobbies(list: Array) -> String:
 	return ", ".join(list.map(func(h): return ProfileData.Hobby.keys()[h].to_lower().replace("_", " ")))
 
 
 func _add_pref_line(label_text: String, value_text: String, is_neg: bool, color := Color.WHITE):
-	var lbl = RichTextLabel.new()
-	lbl.bbcode_enabled = true
-	lbl.fit_content = true
-	var neg_tag = " [color=gray][i](Flexible)[/i][/color]" if is_neg else ""
-	lbl.text = "[font_size=20][color=%s]• %s:[/color] %s%s[/font_size]" % [color.to_html(), label_text, value_text, neg_tag]
-	pref_list.add_child(lbl)
+	var bg = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(color, 0.05)
+
+	style.set_border_width_all(1)
+	style.border_width_left = 5 
+	style.border_color = Color(color, 0.4)
+	style.content_margin_left = 15
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	bg.add_theme_stylebox_override("panel", style)
+
+	var l = RichTextLabel.new()
+	l.bbcode_enabled = true
+	l.fit_content = true
+	l.selection_enabled = false
 	
-	lbl.modulate.a = 0
-	var tw = create_tween()
-	tw.tween_property(lbl, "modulate:a", 1.0, 0.4).set_delay(pref_list.get_child_count() * 0.1)
+	var display_text = ""
+	if value_text == "":
+		display_text = "[font_size=22][b]%s[/b][/font_size]" % label_text
+	else:
+		display_text = "[color=gray][font_size=16]%s[/font_size][/color]\n[font_size=20][b]%s[/b][/font_size]" % [label_text.to_upper(), value_text]
+
+	var neg_tag = " [color=gray][i] Flexible[/i][/color]" if is_neg else ""
+	l.text = "[color=%s]%s%s[/color]" % [color.to_html(), display_text, neg_tag]
+	
+	bg.add_child(l)
+	pref_list.add_child(bg)

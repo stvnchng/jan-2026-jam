@@ -1,8 +1,21 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://dklr5a6b111cd"]
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://dklr5a6b111cd"]
 
 [ext_resource type="FontFile" uid="uid://b5c3hndt1blat" path="res://fonts/Inter-VariableFont_opsz,wght.ttf" id="1_75twi"]
+[ext_resource type="FontFile" uid="uid://bo6w50orfq85h" path="res://fonts/Inter-Italic-VariableFont_opsz,wght.ttf" id="3_4e2xu"]
+
+[sub_resource type="FontVariation" id="FontVariation_foxtb"]
+base_font = ExtResource("1_75twi")
+variation_opentype = {
+2003265652: 600
+}
+
+[sub_resource type="FontVariation" id="FontVariation_2qc78"]
+base_font = ExtResource("3_4e2xu")
 
 [resource]
 Label/colors/font_color = Color(0.101960786, 0.101960786, 0.101960786, 1)
 Label/font_sizes/font_size = 18
 Label/fonts/font = ExtResource("1_75twi")
+RichTextLabel/fonts/bold_font = SubResource("FontVariation_foxtb")
+RichTextLabel/fonts/italics_font = SubResource("FontVariation_2qc78")
+RichTextLabel/fonts/normal_font = ExtResource("1_75twi")
