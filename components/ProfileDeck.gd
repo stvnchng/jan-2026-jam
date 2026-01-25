@@ -23,7 +23,7 @@ func instance_cards():
 		cards.append(card)
 		add_child(card)
 
-func get_selected_cards():
+func get_selected_cards() -> Array[ProfileCard]:
 	return cards.filter(func(card: ProfileCard): return card.is_active)
 
 func layout_cards():

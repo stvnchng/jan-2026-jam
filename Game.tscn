@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=3 uid="uid://buu26llweyujf"]
+
+[ext_resource type="Script" uid="uid://ohwvo4s268pr" path="res://Game.gd" id="1_wbfu4"]
+[ext_resource type="PackedScene" uid="uid://dhgt6dmwkukb8" path="res://components/ProfileDeck.tscn" id="2_xkndl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xkndl"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u44n3"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 1, 1, 0.4)
+corner_detail = 6
+
+[node name="Game" type="CanvasLayer"]
+script = ExtResource("1_wbfu4")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="VBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_xkndl")
+theme_override_styles/fill = SubResource("StyleBoxFlat_u44n3")
+show_percentage = false
+
+[node name="HBox" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ClientPanel" type="Panel" parent="VBox/HBox"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="DeckArea" type="Control" parent="VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ProfileDeck" parent="VBox/HBox/DeckArea" instance=ExtResource("2_xkndl")]
+layout_mode = 1
+
+[node name="SubmitButton" type="Button" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -154.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Submit Candidates"
+
+[node name="Summary" type="CanvasLayer" parent="."]
+visible = false

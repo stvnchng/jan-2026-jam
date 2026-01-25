@@ -37,14 +37,16 @@ func lift_card(up: bool):
 		tween.tween_property(self, "position:y", -35, 0.2)
 		tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.2)
 		tween.tween_property(self, "rotation_degrees", 3.0, 0.2)
-		tween.tween_property(current_style, "shadow_size", 12, 0.2)
-		tween.tween_property(current_style, "shadow_offset", Vector2(0, 10), 0.2)
+		tween.tween_property(current_style, "shadow_color", Color(0, 0, 0, 0.12), 0.2)
+		tween.tween_property(current_style, "shadow_size", 18, 0.2)
+		tween.tween_property(current_style, "shadow_offset", Vector2(0, 12), 0.2)
 	else:
 		z_index = get_index()
 		tween.tween_property(self, "position:y", 0, 0.2)
 		tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)
 		tween.tween_property(self, "rotation_degrees", 0.0, 0.2)
-		tween.tween_property(current_style, "shadow_size", 2, 0.2)
+		tween.tween_property(current_style, "shadow_color", Color(0, 0, 0, 0.05), 0.2)
+		tween.tween_property(current_style, "shadow_size", 4, 0.2)
 		tween.tween_property(current_style, "shadow_offset", Vector2(0, 2), 0.2)
 
 func _gen_rand_profile() -> ProfileData:
@@ -83,7 +85,6 @@ func toggle_select():
 
 func _on_mouse_entered():
 	if is_active: return
-	z_index = 1000
 	lift_card(true)
 
 func _on_mouse_exited():
