@@ -11,7 +11,7 @@ const COLOR_DANGER = Color.TOMATO
 @onready var deck: ProfileDeck = $VBox/HBox/DeckArea/ProfileDeck
 @onready var submit_button: Button = $SubmitButton
 
-@export var round_time := 30.0
+@export var round_time := 45.0
 var time_left : float
 
 var current_client: ProfileData
@@ -30,7 +30,11 @@ func _process(delta: float):
 	if time_left > 0:
 		time_left -= delta
 		progress_bar.value = time_left
-		time_label.text = "%0.1fs" % time_left
+		if time_left > 10.0:
+			time_label.text = "%ds" % ceil(time_left)
+		else:
+			client_view.position.x = randf_range(-1, 1)
+			time_label.text = "%0.1fs" % time_left
 		var ratio = time_left / round_time
 		if ratio > 0.5:
 			progress_bar.modulate = COLOR_WARN.lerp(COLOR_GOOD, (ratio - 0.5) * 2.0)
@@ -39,18 +43,25 @@ func _process(delta: float):
 	else:
 		time_label.text = "0.0s"
 		_on_timer_out()
+	var count = deck.get_selected_cards().size()
+	if count > 0:
+		submit_button.text = "Send %d Candidates" % count
+		submit_button.disabled = false
+	else:
+		submit_button.text = "Select Candidates"
+		submit_button.disabled = true
 
 # TODO implement with premade data
 func _load_client_data() -> ProfileData:
 	var client = ProfileData.new()
-	client.profile_name = ["Sarah", "Mike", "Alex", "Jordan", "Taylor"].pick_random()
-	client.age = randi_range(22, 45)
-	client.height_cm = randi_range(155, 190)
+	client.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
+	client.age = randi_range(22, 40)
+	client.height_cm = randi_range(155, 180)
 	client.smokes = ProfileData.Habit.values().pick_random()
 	client.drinks = ProfileData.Habit.values().pick_random()
-	
+
 	client.min_age = client.age - 5
-	client.max_age = client.age + 5
+	client.max_age = client.age + 7
 	client.age_negotiable = [true, false].pick_random()
 
 	if randf() < 0.4:
@@ -69,10 +80,12 @@ func _load_client_data() -> ProfileData:
 
 	var all_hobbies = ProfileData.Hobby.values().duplicate()
 	all_hobbies.shuffle()
-	client.dealbreaker_hobbies = all_hobbies.slice(0, randi_range(1, 2))
-	
-	return client
+	client.dealbreakers = all_hobbies.slice(0, randi_range(1, 2))
+	client.likes = all_hobbies.filter(func(h): return h not in client.dealbreakers).slice(0, randi_range(1, 2))
+	client.dislikes = all_hobbies.filter(func(h): return h not in client.dealbreakers + (client.likes)).slice(0, randi_range(1, 2))
 
+	current_client = client
+	return client
 
 func _on_timer_out():
 	set_process(false)
@@ -82,9 +95,9 @@ func _on_submit_pressed():
 	set_process(false)
 	var selected = deck.get_selected_cards()
 	if not selected.is_empty():
-		print("submitted ", selected.size(), " profiles:")
 		_show_mock_summary(selected)
 
 func _show_mock_summary(selected_cards: Array[ProfileCard]):
 	for card in selected_cards:
-		print(card.profile_data.get_title_f())
+		var data: ProfileData = card.profile_data
+		print(card.profile_data.get_title_f(), " - Compability Score is ", current_client.get_compatibility_score(data))

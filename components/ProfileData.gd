@@ -5,7 +5,7 @@ class_name ProfileData
 @export var age: int = 25
 @export var height_cm: int = 172
 @export var weight_kg: int = 70
-@export var hobbies: Array = [Hobby.CRYPTO, Hobby.GAMBLING, Hobby.MATCHA_LATTE, Hobby.DEBATING]
+@export var hobbies: Array = []
 @export var drinks: Habit = Habit.SOCIALLY
 @export var smokes: Habit = Habit.NO
 
@@ -21,7 +21,46 @@ class_name ProfileData
 @export var weight_negotiable: bool = true
 @export var alcoholics_welcome: bool = true
 @export var smokers_welcome: bool = false
-@export var dealbreaker_hobbies: Array = [Hobby.CRYPTO, Hobby.GAMBLING]
+@export var likes: Array = []
+@export var dislikes: Array = []
+@export var dealbreakers: Array = []
+
+func get_compatibility_score(candidate: ProfileData) -> int:
+	var score = 0
+	var multiplier = 1.0
+	for hobby in candidate.hobbies:
+		if hobby in likes:
+			score += 1
+		if hobby in dislikes:
+			if hobby >= Hobby.CLEANING:
+				score += 10
+				multiplier += 0.2
+			else:
+				score -= 10
+	
+	if candidate.age >= min_age and candidate.age <= max_age:
+		score += 20
+		var age_gap = abs(candidate.age - age)
+		score += max(0, 10 - age_gap)
+	else:
+		var out_of_range = min(abs(candidate.age - min_age), abs(candidate.age - max_age))
+		var penalty = out_of_range * 15
+		score -= (penalty * 0.5) if age_negotiable else penalty
+	
+	var h_diff = candidate.height_cm - height_cm
+	if h_diff >= 5 and h_diff <= 20:
+		score += 15
+	elif h_diff < 0 and !height_negotiable:
+		score -= 20
+	
+	if !smokers_welcome and candidate.smokes == Habit.YES:
+		score -= 40
+		multiplier *= 0.8
+	
+	if candidate.drinks == Habit.YES and !alcoholics_welcome:
+		score -= 30
+	
+	return roundi(score * multiplier)
 
 func get_title_f():
 	return profile_name + ", " + str(age)
@@ -56,11 +95,11 @@ enum Hobby {
 	GAMBLING,
 	CRYPTO,
 	ANIME,
-	DRINKING,
-	DEBATING,
 	TRAVELING,
-	LABUBU,
 	MATCHA_LATTE,
+	# cleaning and above can be complementary
+	CLEANING,
+	FITNESS,
 	COOKING,
 	READING
 }
