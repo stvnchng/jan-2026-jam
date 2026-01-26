@@ -10,17 +10,27 @@ const COLOR_DANGER = Color.TOMATO
 @onready var sidebar: Sidebar = $VBox/HBox/Sidebar
 @onready var deck: ProfileDeck = $VBox/HBox/DeckArea/ProfileDeck
 @onready var submit_button: Button = $SubmitButton
+@onready var summary_node = $Summary
+@onready var summary_body: RichTextLabel = $Summary/Panel/VBoxContainer/RichTextLabel
+@onready var restart_btn: Button = $Summary/Panel/VBoxContainer/RestartButton
 
-@export var num_rounds = 5
+@export var num_rounds: int = 10
 @export var round_time := 45.0
 var time_left : float
 
 var curr_round = 1
-var total_score : float
+var total_score: int
 var current_client: ProfileData
+
+var best_match_phrase := ""
+var worst_match_phrase := ""
+var best_score := -999.0
+var worst_score := 999.0
+
 
 func _ready():
 	submit_button.pressed.connect(_on_submit_pressed)
+	restart_btn.pressed.connect(_on_restart_pressed)
 	start()
 
 func start():
@@ -30,7 +40,7 @@ func start():
 	
 	progress_bar.modulate = COLOR_GOOD
 	sidebar.setup(_load_client_data())
-	sidebar.update_stats(curr_round, 5, total_score)
+	sidebar.update_stats(curr_round, num_rounds, total_score)
 	deck.start()
 
 func _process(delta: float):
@@ -101,22 +111,66 @@ func _on_timer_out():
 	_on_submit_pressed()
 
 func _on_submit_pressed():
+	submit_button.disabled = true
+	deck.freeze
 	set_process(false)
 	var selected = deck.get_selected_cards()
 	if not selected.is_empty():
-		var score = calc_score(selected)
-		total_score += score
-	if curr_round <= num_rounds:
+		total_score += calc_score(selected)
+		sidebar.update_stats(curr_round, num_rounds, total_score)
+
+	if total_score < 0:
+		_show_summary(false)
+		return
+	if curr_round >= num_rounds:
+		_show_summary(true)
+	else:
 		curr_round += 1
-		await get_tree().create_timer(2.0).timeout
+		await get_tree().create_timer(1.5).timeout
 		start()
 		set_process(true)
 
-func calc_score(selected_cards: Array[ProfileCard]) -> float:
-	var totalScore = 0
+func _on_restart_pressed():
+	total_score = 0
+	curr_round = 1
+	best_score = -999
+	worst_score = 999
+	summary_node.visible = false
+	start()
+	set_process(true)
+
+func _show_summary(is_success: bool):
+	summary_node.visible = true
+	var status = "[font_size=64][wave rate=5.0 level=3]%s[/wave][/font_size]" % ["SUCCESS" if is_success else "BANKRUPT"]
+	
+	summary_body.bbcode_enabled = true
+	summary_body.text = """
+	[center]
+	%s
+
+	[color=gray][font_size=24]You Made[/font_size][/color]
+	[font_size=72]$[b]%s[/b][/font_size]
+
+	[font_size=4] [/font_size] 
+	[i]Matchmaking Highlights:[/i]
+	[font_size=4] [/font_size] 
+	[font_size=24]%s[/font_size]
+	[font_size=4] [/font_size] 
+	[font_size=24]%s[/font_size]
+	[/center]
+	""" % [status, sidebar.comma_sep(roundi(total_score)), best_match_phrase, worst_match_phrase]
+
+func calc_score(selected_cards: Array[ProfileCard]) -> int:
+	var round_total = 0
 	for card in selected_cards:
 		var data: ProfileData = card.profile_data
 		var score = current_client.get_compatibility_score(data)
-		totalScore += score
-		print(card.profile_data.get_title_f(), " - Compability Score is ", score)
-	return totalScore
+		round_total += score
+		if score >= best_score:
+			best_score = score
+			best_match_phrase = "[color=SPRING_GREEN]%s[/color] had a blast with [color=SPRING_GREEN]%s[/color]!" % [current_client.profile_name, data.profile_name]
+		if score < worst_score:
+			if score < best_score or worst_match_phrase == "":
+				worst_score = score
+				worst_match_phrase = "[color=TOMATO]%s[/color] couldn't vibe with [color=TOMATO]%s[/color]..." % [current_client.profile_name, data.profile_name]
+	return round_total

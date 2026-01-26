@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://buu26llweyujf"]
+[gd_scene load_steps=8 format=3 uid="uid://buu26llweyujf"]
 
 [ext_resource type="Script" uid="uid://ohwvo4s268pr" path="res://Game.gd" id="1_wbfu4"]
 [ext_resource type="Theme" uid="uid://dklr5a6b111cd" path="res://fonts/CardTheme.tres" id="2_u44n3"]
@@ -19,6 +19,19 @@ content_margin_right = 2.0
 content_margin_bottom = 2.0
 bg_color = Color(1, 1, 1, 0.4)
 corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb48q"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.19434929, 0.19434926, 0.19434926, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.3137255)
+shadow_size = 16
 
 [node name="Game" type="CanvasLayer"]
 script = ExtResource("1_wbfu4")
@@ -82,3 +95,36 @@ text = "Submit Candidates"
 
 [node name="Summary" type="CanvasLayer" parent="."]
 visible = false
+
+[node name="Panel" type="Panel" parent="Summary"]
+custom_minimum_size = Vector2(800, 600)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sb48q")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Summary/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Summary/Panel/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+
+[node name="RestartButton" type="Button" parent="Summary/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Play Again"

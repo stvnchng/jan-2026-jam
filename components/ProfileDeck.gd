@@ -30,6 +30,9 @@ func instance_cards():
 		add_child(card)
 		card.selected.connect(toggle_card_selection)
 
+func freeze():
+	for card in cards:
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func get_selected_cards() -> Array[ProfileCard]:
 	return cards.filter(func(card: ProfileCard): return card.is_active)

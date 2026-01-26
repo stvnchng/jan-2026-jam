@@ -36,7 +36,7 @@ func setup(data: ProfileData):
 	_add_pref_line(data.get_smokes_f(), "", !data.smokers_welcome, Color.TOMATO if !data.smokers_welcome else Color.WHITE)
 	_add_pref_line(data.get_drinks_f(), "", !data.alcoholics_welcome, Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
 
-func update_stats(current_round: int, max_rounds: int, new_total_score: float):
+func update_stats(current_round: int, max_rounds: int, new_total_score: int):
 	round_lbl.text = "[center][color=gray][font_size=16]CURRENT ROUND[/font_size][/color]\n[font_size=22][b]CLIENT %d / %d[/b][/font_size][/center]" % [current_round, max_rounds]
 	create_tween().set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_OUT).tween_property(self, "display_score", new_total_score, 1.5)
 
