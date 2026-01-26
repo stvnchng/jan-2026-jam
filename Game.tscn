@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://ohwvo4s268pr" path="res://Game.gd" id="1_wbfu4"]
 [ext_resource type="Theme" uid="uid://dklr5a6b111cd" path="res://fonts/CardTheme.tres" id="2_u44n3"]
 [ext_resource type="PackedScene" uid="uid://dhgt6dmwkukb8" path="res://components/ProfileDeck.tscn" id="2_xkndl"]
-[ext_resource type="PackedScene" uid="uid://k0ltxbw6fp0j" path="res://components/ClientView.tscn" id="3_sb48q"]
+[ext_resource type="PackedScene" uid="uid://k0ltxbw6fp0j" path="res://components/Sidebar.tscn" id="3_sb48q"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xkndl"]
 content_margin_left = 2.0
@@ -55,7 +55,7 @@ text = "000000"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ClientPanel" parent="VBox/HBox" instance=ExtResource("3_sb48q")]
+[node name="Sidebar" parent="VBox/HBox" instance=ExtResource("3_sb48q")]
 layout_mode = 2
 
 [node name="DeckArea" type="Control" parent="VBox/HBox"]

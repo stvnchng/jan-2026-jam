@@ -25,7 +25,7 @@ class_name ProfileData
 @export var dislikes: Array = []
 @export var dealbreakers: Array = []
 
-func get_compatibility_score(candidate: ProfileData) -> float:
+func get_compatibility_score(candidate: ProfileData) -> int:
 	var score = 0
 	var multiplier = 1.0
 	for hobby in candidate.hobbies:
@@ -54,11 +54,12 @@ func get_compatibility_score(candidate: ProfileData) -> float:
 		score -= 20
 	
 	if !smokers_welcome and candidate.smokes == Habit.YES:
-		score -= 40
-		multiplier *= 0.8
+		score -= 60
+		multiplier = minf(1.0, multiplier - 0.2)
 	
 	if candidate.drinks == Habit.YES and !alcoholics_welcome:
-		score -= 30
+		score -= 60
+		multiplier = minf(1.0, multiplier - 0.2)
 	
 	return roundi(score * multiplier)
 

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bfmg4pd13rr4k" path="res://components/ProfileCard.tscn" id="2_cr5s4"]
 
 [node name="ProfileDeck" type="Control"]
-custom_minimum_size = Vector2(800, 500)
+custom_minimum_size = Vector2(800, 530)
 layout_mode = 3
 anchors_preset = 7
 anchor_left = 0.5

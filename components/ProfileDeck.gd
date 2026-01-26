@@ -5,7 +5,7 @@ const CARD_WIDTH := 320.0
 const OVERLAP_AMOUNT := 120.0
 
 const MAX_SELECTED = 5
-const SELECTION_Y_OFFSET = -500.0
+const SELECTION_Y_OFFSET = -450.0
 const SELECTED_SPACING = 340.0
 const SELECTION_SCALE := 0.8
 
@@ -14,19 +14,16 @@ const SELECTION_SCALE := 0.8
 var card_count: int = 10
 var cards: Array[ProfileCard] = []
 
-func _ready():
-	pass
-
 func start():
 	instance_cards()
 	await get_tree().process_frame
 	layout_cards()
 
 func instance_cards():
+	cards.clear()
 	for child in get_children():
 		child.queue_free()
 
-	cards.clear()
 	for i in card_count:
 		var card: ProfileCard = card_scn.instantiate()
 		cards.append(card)

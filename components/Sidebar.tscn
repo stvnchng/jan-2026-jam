@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://k0ltxbw6fp0j"]
 
-[ext_resource type="Script" uid="uid://cjpgl6avb4qbi" path="res://components/ClientView.gd" id="1_2uwpf"]
+[ext_resource type="Script" uid="uid://cjpgl6avb4qbi" path="res://components/Sidebar.gd" id="1_2uwpf"]
 [ext_resource type="FontFile" uid="uid://cj4l765pfodhb" path="res://fonts/PlayfairDisplay-VariableFont_wght.ttf" id="2_4bsn5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb48q"]
@@ -22,7 +22,7 @@ variation_opentype = {
 2003265652: 600
 }
 
-[node name="ClientPanel" type="Panel"]
+[node name="Sidebar" type="Panel"]
 custom_minimum_size = Vector2(400, 1000)
 offset_right = 400.0
 offset_bottom = 1000.0
@@ -44,7 +44,7 @@ theme_override_constants/margin_bottom = 24
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 24
 
 [node name="ProfileSummary" type="RichTextLabel" parent="Margin/VBox"]
 layout_mode = 2
@@ -54,4 +54,32 @@ fit_content = true
 
 [node name="PrefList" type="VBoxContainer" parent="Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
+
+[node name="Margin2" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -48.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 48
+
+[node name="VBox" type="VBoxContainer" parent="Margin2"]
+layout_mode = 2
+
+[node name="RoundLabel" type="RichTextLabel" parent="Margin2/VBox"]
+layout_mode = 2
+bbcode_enabled = true
+text = "Funds:"
+fit_content = true
+
+[node name="ScoreLabel" type="RichTextLabel" parent="Margin2/VBox"]
+layout_mode = 2
+bbcode_enabled = true
+text = "123"
+fit_content = true

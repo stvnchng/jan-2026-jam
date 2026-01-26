@@ -7,14 +7,15 @@ const COLOR_DANGER = Color.TOMATO
 @onready var progress_bar: ProgressBar = $VBox/ProgressBar
 @onready var time_label: Label = $VBox/ProgressBar/TimeLabel
 
-@onready var client_view: ClientView = $VBox/HBox/ClientPanel
+@onready var sidebar: Sidebar = $VBox/HBox/Sidebar
 @onready var deck: ProfileDeck = $VBox/HBox/DeckArea/ProfileDeck
 @onready var submit_button: Button = $SubmitButton
 
-@export var num_rounds = 3
+@export var num_rounds = 5
 @export var round_time := 45.0
 var time_left : float
 
+var curr_round = 1
 var total_score : float
 var current_client: ProfileData
 
@@ -28,7 +29,8 @@ func start():
 	time_left = round_time
 	
 	progress_bar.modulate = COLOR_GOOD
-	client_view.setup(_load_client_data())
+	sidebar.setup(_load_client_data())
+	sidebar.update_stats(curr_round, 5, total_score)
 	deck.start()
 
 func _process(delta: float):
@@ -104,13 +106,14 @@ func _on_submit_pressed():
 	if not selected.is_empty():
 		var score = calc_score(selected)
 		total_score += score
-	if num_rounds > 0:
-		num_rounds -= 1
+	if curr_round <= num_rounds:
+		curr_round += 1
+		await get_tree().create_timer(2.0).timeout
 		start()
 		set_process(true)
 
 func calc_score(selected_cards: Array[ProfileCard]) -> float:
-	var totalScore : float = 0.0
+	var totalScore = 0
 	for card in selected_cards:
 		var data: ProfileData = card.profile_data
 		var score = current_client.get_compatibility_score(data)
