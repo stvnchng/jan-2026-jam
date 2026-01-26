@@ -151,14 +151,7 @@ func _on_restart_pressed():
 func _show_summary(is_success: bool):
 	summary_node.visible = true
 	var status = "[font_size=64][wave rate=5.0 level=3]%s[/wave][/font_size]" % ["SUCCESS" if is_success else "BANKRUPT"]
-	var highlight_text: String
-	if is_success:
-		highlight_text = "[color=SPRING_GREEN]%s[/color]" % best_match_phrase
-		if worst_score < 0:
-			highlight_text += "\n[font_size=18]But... [/font_size][color=TOMATO]%s[/color]" % worst_match_phrase
-	else:
-		highlight_text = worst_match_phrase
-	
+	var highlight_text = best_match_phrase if is_success else worst_match_phrase
 	summary_body.text = """
 	[center]
 	%s
