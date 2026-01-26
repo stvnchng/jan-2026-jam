@@ -14,21 +14,20 @@ const SELECTION_SCALE := 0.8
 var card_count: int = 10
 var cards: Array[ProfileCard] = []
 
-func start():
-	instance_cards()
-	await get_tree().process_frame
-	layout_cards()
-
-func instance_cards():
+func start(client: ProfileData):
 	cards.clear()
 	for child in get_children():
 		child.queue_free()
 
 	for i in card_count:
 		var card: ProfileCard = card_scn.instantiate()
+		card.profile_data = ProfileData.create_random()
 		cards.append(card)
 		add_child(card)
 		card.selected.connect(toggle_card_selection)
+
+	cards.pick_random().profile_data = _gen_ideal_match(client)
+	layout_cards()
 
 func freeze():
 	for card in cards:
@@ -46,6 +45,15 @@ func toggle_card_selection(card: ProfileCard):
 		card.update_selection_visuals(false)
 
 	layout_cards()
+
+func _gen_ideal_match(client: ProfileData) -> ProfileData:
+	var p = ProfileData.create_random()
+	p.age = randi_range(client.min_age, client.max_age)
+	p.height_cm = randi_range(client.min_height, client.min_height + 15)
+	p.smokes = ProfileData.Habit.NO if !client.smokers_welcome else ProfileData.Habit.SOCIALLY
+	if !client.likes.is_empty():
+		p.hobbies = [client.likes.pick_random(), ProfileData.Hobby.COOKING, ProfileData.Hobby.READING]
+	return p
 
 func layout_cards():
 	var active_cards = get_selected_cards()

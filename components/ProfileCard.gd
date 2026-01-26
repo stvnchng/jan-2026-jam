@@ -19,7 +19,6 @@ func _ready():
 	original_style = get_theme_stylebox("panel").duplicate()
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
-	profile_data = _gen_rand_profile()
 	set_info()
 
 func set_info():
@@ -50,18 +49,6 @@ func lift_card(up: bool):
 		tween.tween_property(current_style, "shadow_color", Color(0, 0, 0, 0.05), 0.2)
 		tween.tween_property(current_style, "shadow_size", 4, 0.2)
 		tween.tween_property(current_style, "shadow_offset", Vector2(0, 2), 0.2)
-
-func _gen_rand_profile() -> ProfileData:
-	var p_data = ProfileData.new()
-	p_data.age += randi_range(-3, 8)
-	p_data.height_cm += randi_range(-10, 25)
-	p_data.weight_kg += randi_range(-10, 20)
-	var rand_hobbies = ProfileData.Hobby.values().duplicate()
-	rand_hobbies.shuffle()
-	p_data.hobbies = rand_hobbies.slice(0, 4)
-	p_data.smokes = ProfileData.Habit.values().pick_random()
-	p_data.drinks = ProfileData.Habit.values().pick_random()
-	return p_data
 
 func _gui_input(event):
 	if event is InputEventMouseButton:

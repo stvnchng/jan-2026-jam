@@ -1,7 +1,7 @@
 extends Resource
 class_name ProfileData
 
-@export var profile_name: String = "Jubba Johnson"
+@export var profile_name: String 
 @export var age: int = 25
 @export var height_cm: int = 172
 @export var weight_kg: int = 70
@@ -84,6 +84,19 @@ func get_smokes_f():
 
 func get_drinks_f():
 	return "Drinks: " + Habit.keys()[drinks].to_lower()
+
+static func create_random() -> ProfileData:
+	var p = ProfileData.new()
+	p.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
+	p.age = randi_range(20, 50)
+	p.height_cm = randi_range(150, 200)
+	p.weight_kg = randi_range(50, 110)
+	var h = Hobby.values()
+	h.shuffle()
+	p.hobbies = h.slice(0, 3)
+	p.smokes = Habit.values().pick_random()
+	p.drinks = Habit.values().pick_random()
+	return p
 
 enum Habit {
 	NO,

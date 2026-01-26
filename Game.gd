@@ -15,7 +15,7 @@ const COLOR_DANGER = Color.TOMATO
 @onready var restart_btn: Button = $Summary/Panel/VBoxContainer/RestartButton
 
 @export var num_rounds: int = 10
-@export var round_time := 45.0
+@export var round_time := 30.0
 var time_left : float
 
 var curr_round = 1
@@ -34,14 +34,24 @@ func _ready():
 	start()
 
 func start():
+	total_score = 0
+	curr_round = 1
+	best_score = -999
+	worst_score = 999
+	best_match_phrase = ""
+	worst_match_phrase = ""
+	summary_node.visible = false
+
 	progress_bar.max_value = round_time
 	progress_bar.value = round_time
 	time_left = round_time
 	
 	progress_bar.modulate = COLOR_GOOD
-	sidebar.setup(_load_client_data())
+	
+	current_client = _load_client_data()
+	sidebar.setup(current_client)
 	sidebar.update_stats(curr_round, num_rounds, total_score)
-	deck.start()
+	deck.start(current_client)
 
 func _process(delta: float):
 	if time_left > 0:
@@ -64,7 +74,7 @@ func _process(delta: float):
 		if count == 5:
 			submit_button.text = "Send %d Candidates (MAX)" % count
 		else:
-			submit_button.text = "Send %d Candidates" % count
+			submit_button.text = "Send %d Candidate(s)" % count
 		submit_button.disabled = false
 	else:
 		submit_button.text = "Select Candidates"
@@ -103,7 +113,6 @@ func _load_client_data() -> ProfileData:
 	client.likes = all_hobbies.filter(func(h): return h not in client.dealbreakers).slice(0, randi_range(1, 2))
 	client.dislikes = all_hobbies.filter(func(h): return h not in client.dealbreakers + (client.likes)).slice(0, randi_range(1, 2))
 
-	current_client = client
 	return client
 
 func _on_timer_out():
@@ -112,12 +121,17 @@ func _on_timer_out():
 
 func _on_submit_pressed():
 	submit_button.disabled = true
-	deck.freeze
+	deck.freeze()
 	set_process(false)
 	var selected = deck.get_selected_cards()
 	if not selected.is_empty():
 		total_score += calc_score(selected)
 		sidebar.update_stats(curr_round, num_rounds, total_score)
+	else:
+		var penalty = 100
+		total_score -= penalty
+		worst_match_phrase = "[color=TOMATO]%s left a scathing review about your prowess as a matchmaker.[/color]" % [current_client.profile_name]
+		sidebar.display_score = total_score
 
 	if total_score < 0:
 		_show_summary(false)
@@ -131,31 +145,22 @@ func _on_submit_pressed():
 		set_process(true)
 
 func _on_restart_pressed():
-	total_score = 0
-	curr_round = 1
-	best_score = -999
-	worst_score = 999
-	summary_node.visible = false
 	start()
 	set_process(true)
 
 func _show_summary(is_success: bool):
 	summary_node.visible = true
 	var status = "[font_size=64][wave rate=5.0 level=3]%s[/wave][/font_size]" % ["SUCCESS" if is_success else "BANKRUPT"]
-	
-	summary_body.bbcode_enabled = true
 	summary_body.text = """
 	[center]
 	%s
 
 	[color=gray][font_size=24]You Made[/font_size][/color]
-	[font_size=72]$[b]%s[/b][/font_size]
+	[font_size=72]$%s[/font_size]
 
 	[font_size=4] [/font_size] 
-	[i]Matchmaking Highlights:[/i]
-	[font_size=4] [/font_size] 
 	[font_size=24]%s[/font_size]
-	[font_size=4] [/font_size] 
+	[font_size=2] [/font_size] 
 	[font_size=24]%s[/font_size]
 	[/center]
 	""" % [status, sidebar.comma_sep(roundi(total_score)), best_match_phrase, worst_match_phrase]
