@@ -1,9 +1,31 @@
 [gd_scene load_steps=2 format=3 uid="uid://yig5sofh68cs"]
 
-[ext_resource type="Script" uid="uid://b8to30210600m" path="res://components/GameManager.gd" id="1_b2uu3"]
+[sub_resource type="GDScript" id="GDScript_07fdw"]
+script/source = "extends Node2D
+class_name GameManager
+
+var candidate : ProfileCard
+var deck : ProfileDeck
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	deck = get_node(\"../VBox/HBox/DeckArea/ProfileDeck\")
+	candidate = get_node(\"../VBox/HBox/\")
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+	
+func _on_timer_timeout() -> void:
+	var selected_cards = deck.get_selected_cards()
+	var score = calculate_score(candidate, selected_cards)
+
+func calculate_score(c : ProfileCard, selected : Array[ProfileCard]) -> float:
+	return 0.0
+"
 
 [node name="GameManager" type="Node2D"]
-script = ExtResource("1_b2uu3")
+script = SubResource("GDScript_07fdw")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 30.0

@@ -11,20 +11,25 @@ const COLOR_DANGER = Color.TOMATO
 @onready var deck: ProfileDeck = $VBox/HBox/DeckArea/ProfileDeck
 @onready var submit_button: Button = $SubmitButton
 
+@export var num_rounds = 3
 @export var round_time := 45.0
 var time_left : float
 
+var total_score : float
 var current_client: ProfileData
 
 func _ready():
+	submit_button.pressed.connect(_on_submit_pressed)
+	start()
+
+func start():
 	progress_bar.max_value = round_time
 	progress_bar.value = round_time
 	time_left = round_time
 	
 	progress_bar.modulate = COLOR_GOOD
-	submit_button.pressed.connect(_on_submit_pressed)
-	
 	client_view.setup(_load_client_data())
+	deck.start()
 
 func _process(delta: float):
 	if time_left > 0:
@@ -97,9 +102,18 @@ func _on_submit_pressed():
 	set_process(false)
 	var selected = deck.get_selected_cards()
 	if not selected.is_empty():
-		_show_mock_summary(selected)
+		var score = calc_score(selected)
+		total_score += score
+	if num_rounds > 0:
+		num_rounds -= 1
+		start()
+		set_process(true)
 
-func _show_mock_summary(selected_cards: Array[ProfileCard]):
+func calc_score(selected_cards: Array[ProfileCard]) -> float:
+	var totalScore : float = 0.0
 	for card in selected_cards:
 		var data: ProfileData = card.profile_data
-		print(card.profile_data.get_title_f(), " - Compability Score is ", current_client.get_compatibility_score(data))
+		var score = current_client.get_compatibility_score(data)
+		totalScore += score
+		print(card.profile_data.get_title_f(), " - Compability Score is ", score)
+	return totalScore

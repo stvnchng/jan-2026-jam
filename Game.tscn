@@ -22,6 +22,7 @@ corner_detail = 6
 
 [node name="Game" type="CanvasLayer"]
 script = ExtResource("1_wbfu4")
+round_time = 30.0
 
 [node name="VBox" type="VBoxContainer" parent="."]
 anchors_preset = 15

@@ -25,7 +25,7 @@ class_name ProfileData
 @export var dislikes: Array = []
 @export var dealbreakers: Array = []
 
-func get_compatibility_score(candidate: ProfileData) -> int:
+func get_compatibility_score(candidate: ProfileData) -> float:
 	var score = 0
 	var multiplier = 1.0
 	for hobby in candidate.hobbies:
