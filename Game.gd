@@ -34,14 +34,6 @@ func _ready():
 	start()
 
 func start():
-	total_score = 0
-	curr_round = 1
-	best_score = -999
-	worst_score = 999
-	best_match_phrase = ""
-	worst_match_phrase = ""
-	summary_node.visible = false
-
 	progress_bar.max_value = round_time
 	progress_bar.value = round_time
 	time_left = round_time
@@ -145,25 +137,38 @@ func _on_submit_pressed():
 		set_process(true)
 
 func _on_restart_pressed():
+	total_score = 0
+	curr_round = 1
+	best_score = -999
+	worst_score = 999
+	best_match_phrase = ""
+	worst_match_phrase = ""
+	summary_node.visible = false
+
 	start()
 	set_process(true)
 
 func _show_summary(is_success: bool):
 	summary_node.visible = true
 	var status = "[font_size=64][wave rate=5.0 level=3]%s[/wave][/font_size]" % ["SUCCESS" if is_success else "BANKRUPT"]
+	var highlight_text: String
+	if is_success:
+		highlight_text = "[color=SPRING_GREEN]%s[/color]" % best_match_phrase
+		if worst_score < 0:
+			highlight_text += "\n[font_size=18]But... [/font_size][color=TOMATO]%s[/color]" % worst_match_phrase
+	else:
+		highlight_text = worst_match_phrase
+	
 	summary_body.text = """
 	[center]
 	%s
 
-	[color=gray][font_size=24]You Made[/font_size][/color]
+	[color=gray][font_size=24]Final Earnings[/font_size][/color]
 	[font_size=72]$%s[/font_size]
-
-	[font_size=4] [/font_size] 
-	[font_size=24]%s[/font_size]
-	[font_size=2] [/font_size] 
-	[font_size=24]%s[/font_size]
+	[font_size=24][/font_size] 
+	[font_size=24]%s[/font_size] 
 	[/center]
-	""" % [status, sidebar.comma_sep(roundi(total_score)), best_match_phrase, worst_match_phrase]
+	""" % [status, sidebar.comma_sep(roundi(total_score)), highlight_text]
 
 func calc_score(selected_cards: Array[ProfileCard]) -> int:
 	var round_total = 0
