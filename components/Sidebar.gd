@@ -33,8 +33,8 @@ func setup(data: ProfileData):
 	if !data.dislikes.is_empty():
 		_add_pref_line("Personal Aversions", _format_hobbies(data.dislikes), false, Color.GOLD)
 
-	_add_pref_line(data.get_smokes_f(), "", !data.smokers_welcome, Color.TOMATO if !data.smokers_welcome else Color.WHITE)
-	_add_pref_line(data.get_drinks_f(), "", !data.alcoholics_welcome, Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
+	_add_pref_line(data.get_smokes_f(), "", data.smokers_welcome, Color.TOMATO if !data.smokers_welcome else Color.WHITE)
+	_add_pref_line(data.get_drinks_f(), "", data.alcoholics_welcome, Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
 
 func update_stats(current_round: int, max_rounds: int, new_total_score: int):
 	round_lbl.text = "[center][color=gray][font_size=16]CURRENT ROUND[/font_size][/color]\n[font_size=22][b]CLIENT %d / %d[/b][/font_size][/center]" % [current_round, max_rounds]
@@ -55,7 +55,7 @@ func comma_sep(n: int) -> String:
 
 
 func _format_hobbies(list: Array) -> String:
-	return ", ".join(list.map(func(h): return ProfileData.Hobby.keys()[h].to_lower().replace("_", " ")))
+	return ", ".join(list.map(func(h): return h.to_lower().replace("_", " ")))
 
 func _add_pref_line(label_text: String, value_text: String, is_neg: bool, color := Color.WHITE):
 	var bg = PanelContainer.new()

@@ -61,6 +61,7 @@ func _process(delta: float):
 	else:
 		time_label.text = "0.0s"
 		_on_timer_out()
+
 	var count = deck.get_selected_cards().size()
 	if count > 0:
 		if count == 5:
@@ -99,11 +100,9 @@ func _load_client_data() -> ProfileData:
 	else:
 		client.smokers_welcome = true
 
-	var all_hobbies = ProfileData.Hobby.values().duplicate()
-	all_hobbies.shuffle()
-	client.dealbreakers = all_hobbies.slice(0, randi_range(1, 2))
-	client.likes = all_hobbies.filter(func(h): return h not in client.dealbreakers).slice(0, randi_range(1, 2))
-	client.dislikes = all_hobbies.filter(func(h): return h not in client.dealbreakers + (client.likes)).slice(0, randi_range(1, 2))
+	client.dealbreakers = ProfileData.pick_hobbies(randi_range(1, 2))
+	client.likes = ProfileData.pick_likes(5).filter(func(h): return h not in client.dealbreakers).slice(0, randi_range(1, 2))
+	client.dislikes = ProfileData.pick_aversions(5).filter(func(h): return h not in client.dealbreakers + (client.likes)).slice(0, randi_range(1, 2))
 
 	return client
 

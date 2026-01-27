@@ -52,7 +52,11 @@ func _gen_ideal_match(client: ProfileData) -> ProfileData:
 	p.height_cm = randi_range(client.min_height, client.min_height + 15)
 	p.smokes = ProfileData.Habit.NO if !client.smokers_welcome else ProfileData.Habit.SOCIALLY
 	if !client.likes.is_empty():
-		p.hobbies = [client.likes.pick_random(), ProfileData.Hobby.COOKING, ProfileData.Hobby.READING]
+		p.hobbies = []
+		for i in range(randi_range(1, len(client.likes))):
+			var h = client.likes.pick_random()
+			if not h in p.hobbies:
+				p.hobbies.append(h)
 	return p
 
 func layout_cards():

@@ -32,11 +32,7 @@ func get_compatibility_score(candidate: ProfileData) -> int:
 		if hobby in likes:
 			score += 1
 		if hobby in dislikes:
-			if hobby >= Hobby.CLEANING:
-				score += 10
-				multiplier += 0.2
-			else:
-				score -= 10
+			score -= 10
 	
 	if candidate.age >= min_age and candidate.age <= max_age:
 		score += 20
@@ -73,8 +69,8 @@ func get_weight_f():
 	return str(weight_kg) + "kg"
 
 func get_hobbies_f():
-	var get_hobby_s = func(h: Hobby): return " ".join(Hobby.keys()[h].split("_")).to_lower()
-	var hobby_s = ", ".join(hobbies.map(func(h: Hobby):
+	var get_hobby_s = func(h: String): return " ".join(h.split("_")).to_lower()
+	var hobby_s = ", ".join(hobbies.map(func(h: String):
 		return get_hobby_s.call(h)
 	))
 	return "Hobbies: " + hobby_s
@@ -91,11 +87,9 @@ static func create_random() -> ProfileData:
 	p.age = randi_range(20, 50)
 	p.height_cm = randi_range(150, 200)
 	p.weight_kg = randi_range(50, 110)
-	var h = Hobby.values()
-	h.shuffle()
-	p.hobbies = h.slice(0, 3)
-	p.smokes = Habit.values().pick_random()
-	p.drinks = Habit.values().pick_random()
+	p.hobbies = pick_hobbies(3)
+	p.smokes = pick_smoke_habit()
+	p.drinks = pick_drink_habit()
 	return p
 
 enum Habit {
@@ -104,16 +98,55 @@ enum Habit {
 	YES
 }
 
-# enum starts at 0, so order hobbies by least -> most attractive for scoring
-enum Hobby {
-	GAMBLING,
-	CRYPTO,
-	ANIME,
-	TRAVELING,
-	MATCHA_LATTE,
-	# cleaning and above can be complementary
-	CLEANING,
-	FITNESS,
-	COOKING,
-	READING
+static func pick_habit_with_probability(yes, socially, no : float) -> Habit:
+	var rng = RandomNumberGenerator.new()
+	var num = rng.randf_range(0, yes+socially+no)
+	if num < yes:
+		return Habit.YES
+	if num >= yes and num < yes+socially:
+		return Habit.SOCIALLY
+	return Habit.NO 
+
+# pick smoking habits base on custom defined probabilities
+static func pick_smoke_habit() -> Habit:
+	return pick_habit_with_probability(10, 20, 70)
+	
+static func pick_drink_habit() -> Habit:
+	return pick_habit_with_probability(30, 50, 20)
+
+# Format: Hobby_name -> [chances of being hobbies, chances of being disliked]
+static var Hobbies = {
+	"CRYPTO": [3, 17],
+	"ANIME": [10, 15],
+	"TRAVELING": [20, 3],
+	"GYM": [15, 6],
+	"COOKING": [13, 8],
+	"READING": [12, 6],
+	"CLIMBING": [8, 9],
+	"GAMBLING": [1, 20],
+	"MOVIES": [10, 3],
 }
+
+static func pick_hobbies(num_hobbies : int = 100, pick_aversion: bool = false) -> Array:
+	var result = []
+	var hobby_picks = []
+	# on what this index is -> see the description above Hobbies
+	var hobby_index = 0
+	if pick_aversion:
+		hobby_index = 1
+	for h in Hobbies:
+		var v = Hobbies[h][hobby_index]
+		for i in range(v):
+			hobby_picks.append(h)
+	num_hobbies = min(num_hobbies, len(Hobbies))
+	for i in range(num_hobbies):
+		var hobby = hobby_picks.pick_random()
+		if not hobby in result:
+			result.append(hobby)
+	return result
+
+static func pick_likes(num_hobbies : int = 100) -> Array:
+	return pick_hobbies(num_hobbies)
+
+static func pick_aversions(num_hobbies : int = 100) -> Array:
+	return pick_hobbies(num_hobbies, true)
