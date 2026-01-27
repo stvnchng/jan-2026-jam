@@ -78,9 +78,9 @@ func _load_client_data() -> ProfileData:
 	var client = ProfileData.new()
 	client.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
 	client.age = randi_range(22, 40)
-	client.height_cm = randi_range(155, 180)
-	client.smokes = ProfileData.Habit.values().pick_random()
-	client.drinks = ProfileData.Habit.values().pick_random()
+	client.height_cm = randi_range(150, 180)
+	client.smokes = ProfileData.pick_smoke_habit()
+	client.drinks = ProfileData.pick_drink_habit()
 
 	client.min_age = client.age - 5
 	client.max_age = client.age + 7
@@ -95,7 +95,7 @@ func _load_client_data() -> ProfileData:
 		client.max_height = 210
 		client.height_negotiable = true
 
-	if client.smokes == ProfileData.Habit.NO:
+	if client.smokes == ProfileData.Habit.NO and randf() < 0.7:
 		client.smokers_welcome = false
 	else:
 		client.smokers_welcome = true
@@ -110,6 +110,7 @@ func _on_timer_out():
 	set_process(false)
 	_on_submit_pressed()
 
+@export var no_selection_penalty = 30
 func _on_submit_pressed():
 	submit_button.disabled = true
 	deck.freeze()
@@ -119,8 +120,7 @@ func _on_submit_pressed():
 		total_score += calc_score(selected)
 		sidebar.update_stats(curr_round, num_rounds, total_score)
 	else:
-		var penalty = 100
-		total_score -= penalty
+		total_score -= no_selection_penalty
 		worst_match_phrase = "[color=TOMATO]%s left a scathing review about your prowess as a matchmaker.[/color]" % [current_client.profile_name]
 		sidebar.display_score = total_score
 
@@ -166,7 +166,7 @@ func calc_score(selected_cards: Array[ProfileCard]) -> int:
 	var round_total = 0
 	for card in selected_cards:
 		var data: ProfileData = card.profile_data
-		var score = current_client.get_compatibility_score(data)
+		var score = get_compatibility_score(current_client, data)
 		round_total += score
 		if score >= best_score:
 			best_score = score
@@ -176,3 +176,44 @@ func calc_score(selected_cards: Array[ProfileCard]) -> int:
 				worst_score = score
 				worst_match_phrase = "[color=TOMATO]%s[/color] couldn't vibe with [color=TOMATO]%s[/color]..." % [current_client.profile_name, data.profile_name]
 	return round_total
+
+@export var hobby_score = 3
+@export var hobby_penalty = 10
+@export var age_score = 20
+@export var height_score = 15
+@export var height_penalty = 15
+@export var smoke_penalty = 60
+@export var alchohol_penalty = 60
+
+func get_compatibility_score(client: ProfileData, candidate: ProfileData) -> int:
+	var score = 0
+
+	for hobby in candidate.hobbies:
+		if hobby in client.likes:
+			score += hobby_score
+		if hobby in client.dislikes:
+			score -= hobby_penalty
+	
+	if candidate.age < 18:
+		return -10000 # instant death
+	if candidate.age >= client.min_age and candidate.age <= client.max_age:
+		score += 20
+		var age_gap = abs(candidate.age - client.age)
+		score += max(0, 10 - age_gap)
+	else:
+		var out_of_range = min(abs(candidate.age - client.min_age), abs(candidate.age - client.max_age))
+		var penalty = out_of_range * 2
+		score -= (penalty * 0.5) if client.age_negotiable else penalty
+	
+	if candidate.height_cm >= client.min_height and candidate.height_cm <= client.max_height:
+		score += height_score
+	else:
+		score -= height_penalty if client.height_negotiable else height_penalty * 2
+	
+	if !client.smokers_welcome and candidate.smokes != ProfileData.Habit.NO:
+		score -= 60
+	
+	if !client.alcoholics_welcome and candidate.drinks != ProfileData.Habit.NO:
+		score -= 60
+	
+	return roundi(score)

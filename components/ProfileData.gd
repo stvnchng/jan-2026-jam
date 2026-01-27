@@ -25,40 +25,6 @@ class_name ProfileData
 @export var dislikes: Array = []
 @export var dealbreakers: Array = []
 
-func get_compatibility_score(candidate: ProfileData) -> int:
-	var score = 0
-	var multiplier = 1.0
-	for hobby in candidate.hobbies:
-		if hobby in likes:
-			score += 1
-		if hobby in dislikes:
-			score -= 10
-	
-	if candidate.age >= min_age and candidate.age <= max_age:
-		score += 20
-		var age_gap = abs(candidate.age - age)
-		score += max(0, 10 - age_gap)
-	else:
-		var out_of_range = min(abs(candidate.age - min_age), abs(candidate.age - max_age))
-		var penalty = out_of_range * 15
-		score -= (penalty * 0.5) if age_negotiable else penalty
-	
-	var h_diff = candidate.height_cm - height_cm
-	if h_diff >= 5 and h_diff <= 20:
-		score += 15
-	elif h_diff < 0 and !height_negotiable:
-		score -= 20
-	
-	if !smokers_welcome and candidate.smokes == Habit.YES:
-		score -= 60
-		multiplier = minf(1.0, multiplier - 0.2)
-	
-	if candidate.drinks == Habit.YES and !alcoholics_welcome:
-		score -= 60
-		multiplier = minf(1.0, multiplier - 0.2)
-	
-	return roundi(score * multiplier)
-
 func get_title_f():
 	return profile_name + ", " + str(age)
 
@@ -81,10 +47,12 @@ func get_smokes_f():
 func get_drinks_f():
 	return "Drinks: " + Habit.keys()[drinks].to_lower()
 
-static func create_random() -> ProfileData:
+static func create_random(age_bomb : bool = false) -> ProfileData:
 	var p = ProfileData.new()
 	p.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
 	p.age = randi_range(20, 50)
+	if age_bomb and randi_range(0, 10) <= 1:
+		p.age = 16
 	p.height_cm = randi_range(150, 200)
 	p.weight_kg = randi_range(50, 110)
 	p.hobbies = pick_hobbies(3)
