@@ -10,6 +10,9 @@ const COLOR_DANGER = Color.TOMATO
 @onready var sidebar: Sidebar = $VBox/HBox/Sidebar
 @onready var deck: ProfileDeck = $VBox/HBox/DeckArea/ProfileDeck
 @onready var submit_button: Button = $SubmitButton
+@onready var start_node = $Start
+@onready var instructions : RichTextLabel = $Start/Panel/VBoxContainer/RichTextLabel
+@onready var start_btn : Button = $Start/Panel/VBoxContainer/StartButton
 @onready var summary_node = $Summary
 @onready var summary_body: RichTextLabel = $Summary/Panel/VBoxContainer/RichTextLabel
 @onready var restart_btn: Button = $Summary/Panel/VBoxContainer/RestartButton
@@ -29,9 +32,35 @@ var worst_score := 999.0
 
 
 func _ready():
+	show_start()
 	submit_button.pressed.connect(_on_submit_pressed)
 	restart_btn.pressed.connect(_on_restart_pressed)
+	start_btn.pressed.connect(_on_start_pressed)
+	set_process(false)
+
+func _on_start_pressed():
+	start_node.visible = false
 	start()
+
+func show_start():
+	start_node.visible = true
+	instructions.text = """
+	[center]
+	[color=green][font_size=60]Rules[/font_size][/color]
+	[/center]
+	[left]
+	[color=white][font_size=28]%s[/font_size][/color]
+	[/left]
+	""" % instructions.text
+
+func reset():
+	total_score = 0
+	curr_round = 1
+	best_score = -999
+	worst_score = 999
+	best_match_phrase = ""
+	worst_match_phrase = ""
+	summary_node.visible = false
 
 func start():
 	progress_bar.max_value = round_time
@@ -44,6 +73,7 @@ func start():
 	sidebar.setup(current_client)
 	sidebar.update_stats(curr_round, num_rounds, total_score)
 	deck.start(current_client)
+	set_process(true)
 
 func _process(delta: float):
 	if time_left > 0:
@@ -140,14 +170,7 @@ func _on_submit_pressed():
 		set_process(true)
 
 func _on_restart_pressed():
-	total_score = 0
-	curr_round = 1
-	best_score = -999
-	worst_score = 999
-	best_match_phrase = ""
-	worst_match_phrase = ""
-	summary_node.visible = false
-
+	reset()
 	start()
 	set_process(true)
 

@@ -5,7 +5,6 @@ signal selected(card_ref: ProfileCard)
 
 @onready var name_lbl: Label = $Margin/VBox/Name
 @onready var height_lbl: Label = $Margin/VBox/Height
-@onready var weight_lbl: Label = $Margin/VBox/Weight
 @onready var hobbies: Label = $Margin/VBox/Hobbies
 @onready var smokes_lbl: Label = $Margin/VBox/Smokes
 @onready var drinks_lbl: Label = $Margin/VBox/Drinks

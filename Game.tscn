@@ -130,3 +130,42 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 20
 text = "Play Again"
+
+[node name="Start" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="Start"]
+custom_minimum_size = Vector2(800, 600)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sb48q")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Start/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Start/Panel/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "1. Pick the perfect candidate. 
+2. Do not pick someone your client don't mesh with.
+"
+fit_content = true
+
+[node name="StartButton" type="Button" parent="Start/Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "Play"
