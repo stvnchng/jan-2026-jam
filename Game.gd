@@ -109,7 +109,7 @@ func gen_client_data() -> ProfileData:
 
 	client.min_age = max(18, client.age - 8)
 	client.max_age = min(50, client.age + 4)
-	if randf() < 0.3:
+	if randf() < 0.15:
 		client.min_age = 18
 		client.max_age = 24
 	elif randf() < 0.1:
