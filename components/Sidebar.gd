@@ -18,23 +18,28 @@ func setup(data: ProfileData):
 	for child in pref_list.get_children():
 		child.queue_free()
 
-	if !data.age_negotiable or (data.max_age - data.min_age < 10):
-		_add_pref_line("Desired Age Range", "%d-%d" % [data.min_age, data.max_age], data.age_negotiable)
+	_add_pref_line("Desired Age Range", "%d-%d" % [data.min_age, data.max_age])
 
-	if data.min_height > 160 or !data.height_negotiable:
-		_add_pref_line("Desired Height", "%dcm+" % data.min_height, data.height_negotiable)
+	var height_str = "%d-%dcm" % [data.min_height, data.max_height]
+	if data.min_height == ProfileData.MIN_HEIGHT:
+		height_str = "%dcm-" % data.max_height
+	if data.max_height == ProfileData.MAX_HEIGHT:
+		height_str = "%dcm+" % data.min_height
+	_add_pref_line("Desired Height", height_str)
 
 	if !data.smokers_welcome:
-		_add_pref_line("Lifestyle", "Non-smokers only", false, Color.TOMATO)
+		_add_pref_line("Lifestyle", "Non-smokers only", Color.TOMATO)
+	if !data.alcoholics_welcome:
+		_add_pref_line("Lifestyle", "Non-drinkers only", Color.TOMATO)
 
 	if !data.likes.is_empty():
-		_add_pref_line("Interests", _format_hobbies(data.likes), false, Color.SPRING_GREEN)
+		_add_pref_line("Interests", _format_hobbies(data.likes), Color.SPRING_GREEN)
 
 	if !data.dislikes.is_empty():
-		_add_pref_line("Personal Aversions", _format_hobbies(data.dislikes), false, Color.GOLD)
+		_add_pref_line("Personal Aversions", _format_hobbies(data.dislikes), Color.GOLD)
 
-	_add_pref_line(data.get_smokes_f(), "", data.smokers_welcome, Color.TOMATO if !data.smokers_welcome else Color.WHITE)
-	_add_pref_line(data.get_drinks_f(), "", data.alcoholics_welcome, Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
+	_add_pref_line(data.get_smokes_f(), "", Color.TOMATO if !data.smokers_welcome else Color.WHITE)
+	_add_pref_line(data.get_drinks_f(), "", Color.TOMATO if !data.alcoholics_welcome else Color.WHITE)
 
 func update_stats(current_round: int, max_rounds: int, new_total_score: int):
 	round_lbl.text = "[center][color=gray][font_size=16]CURRENT ROUND[/font_size][/color]\n[font_size=22][b]CLIENT %d / %d[/b][/font_size][/center]" % [current_round, max_rounds]
@@ -57,7 +62,7 @@ func comma_sep(n: int) -> String:
 func _format_hobbies(list: Array) -> String:
 	return ", ".join(list.map(func(h): return h.to_lower().replace("_", " ")))
 
-func _add_pref_line(label_text: String, value_text: String, is_neg: bool, color := Color.WHITE):
+func _add_pref_line(label_text: String, value_text: String, color := Color.WHITE):
 	var bg = PanelContainer.new()
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(color, 0.05)
@@ -81,8 +86,7 @@ func _add_pref_line(label_text: String, value_text: String, is_neg: bool, color 
 	else:
 		display_text = "[color=gray][font_size=16]%s[/font_size][/color]\n[font_size=20][b]%s[/b][/font_size]" % [label_text.to_upper(), value_text]
 
-	var neg_tag = " [color=gray][i] Flexible[/i][/color]" if is_neg else ""
-	l.text = "[color=%s]%s%s[/color]" % [color.to_html(), display_text, neg_tag]
+	l.text = "[color=%s]%s[/color]" % [color.to_html(), display_text]
 	
 	bg.add_child(l)
 	pref_list.add_child(bg)

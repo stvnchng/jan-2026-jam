@@ -21,12 +21,13 @@ func start(client: ProfileData):
 
 	for i in card_count:
 		var card: ProfileCard = card_scn.instantiate()
-		card.profile_data = ProfileData.create_random()
+		card.profile_data = ProfileData.create_random(true)
 		cards.append(card)
-		add_child(card)
 		card.selected.connect(toggle_card_selection)
-
 	cards.pick_random().profile_data = _gen_ideal_match(client)
+	for c in cards:
+		add_child(c)
+
 	layout_cards()
 
 func freeze():
@@ -49,14 +50,11 @@ func toggle_card_selection(card: ProfileCard):
 func _gen_ideal_match(client: ProfileData) -> ProfileData:
 	var p = ProfileData.create_random()
 	p.age = randi_range(client.min_age, client.max_age)
-	p.height_cm = randi_range(client.min_height, client.min_height + 15)
-	p.smokes = ProfileData.Habit.NO if !client.smokers_welcome else ProfileData.Habit.SOCIALLY
-	if !client.likes.is_empty():
-		p.hobbies = []
-		for i in range(randi_range(1, len(client.likes))):
-			var h = client.likes.pick_random()
-			if not h in p.hobbies:
-				p.hobbies.append(h)
+	p.height_cm = randi_range(client.min_height, client.max_height)
+	p.smokes = ProfileData.Habit.NO if !client.smokers_welcome else p.smokes
+	p.drinks = ProfileData.Habit.NO if !client.alcoholics_welcome else p.drinks
+	p.hobbies = ProfileData.pick_likes(randi_range(2, 4), client.dislikes)
+
 	return p
 
 func layout_cards():

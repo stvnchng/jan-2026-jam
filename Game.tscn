@@ -35,8 +35,8 @@ shadow_size = 16
 
 [node name="Game" type="CanvasLayer"]
 script = ExtResource("1_wbfu4")
-num_rounds = 5
-round_time = 45.0
+num_rounds = 7
+round_time = 20.0
 
 [node name="VBox" type="VBoxContainer" parent="."]
 anchors_preset = 15

@@ -12,18 +12,12 @@ class_name ProfileData
 @export_category("Preferences")
 @export var min_age: int = 23
 @export var max_age: int = 27
-@export var age_negotiable: bool = true
 @export var min_height: int = 168
 @export var max_height: int = 195
-@export var height_negotiable: bool = false
-@export var min_weight: int = 60
-@export var max_weight: int = 90
-@export var weight_negotiable: bool = true
 @export var alcoholics_welcome: bool = true
 @export var smokers_welcome: bool = false
 @export var likes: Array = []
 @export var dislikes: Array = []
-@export var dealbreakers: Array = []
 
 func get_title_f():
 	return profile_name + ", " + str(age)
@@ -47,15 +41,17 @@ func get_smokes_f():
 func get_drinks_f():
 	return "Drinks: " + Habit.keys()[drinks].to_lower()
 
+const MIN_HEIGHT = 150
+const MAX_HEIGHT = 210
 static func create_random(age_bomb : bool = false) -> ProfileData:
 	var p = ProfileData.new()
 	p.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
 	p.age = randi_range(20, 50)
-	if age_bomb and randi_range(0, 10) <= 1:
+	if age_bomb and randi_range(0, 10) < 1:
 		p.age = 16
-	p.height_cm = randi_range(150, 200)
+	p.height_cm = randi_range(MIN_HEIGHT, MAX_HEIGHT)
 	p.weight_kg = randi_range(50, 110)
-	p.hobbies = pick_hobbies(3)
+	p.hobbies = pick_hobbies(randi_range(2, 4))
 	p.smokes = pick_smoke_habit()
 	p.drinks = pick_drink_habit()
 	return p
@@ -95,7 +91,7 @@ static var Hobbies = {
 	"MOVIES": [10, 3],
 }
 
-static func pick_hobbies(num_hobbies : int = 100, pick_aversion: bool = false) -> Array:
+static func pick_hobbies(num_hobbies : int = 100, pick_aversion: bool = false, skips : Array = []) -> Array:
 	var result = []
 	var hobby_picks = []
 	# on what this index is -> see the description above Hobbies
@@ -103,6 +99,8 @@ static func pick_hobbies(num_hobbies : int = 100, pick_aversion: bool = false) -
 	if pick_aversion:
 		hobby_index = 1
 	for h in Hobbies:
+		if h in skips:
+			continue
 		var v = Hobbies[h][hobby_index]
 		for i in range(v):
 			hobby_picks.append(h)
@@ -113,8 +111,8 @@ static func pick_hobbies(num_hobbies : int = 100, pick_aversion: bool = false) -
 			result.append(hobby)
 	return result
 
-static func pick_likes(num_hobbies : int = 100) -> Array:
-	return pick_hobbies(num_hobbies)
+static func pick_likes(num_hobbies : int = 100, skips : Array = []) -> Array:
+	return pick_hobbies(num_hobbies, false, skips)
 
-static func pick_aversions(num_hobbies : int = 100) -> Array:
-	return pick_hobbies(num_hobbies, true)
+static func pick_aversions(num_hobbies : int = 100, skips : Array = []) -> Array:
+	return pick_hobbies(num_hobbies, true, skips)

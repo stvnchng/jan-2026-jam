@@ -24,7 +24,6 @@ func _ready():
 func set_info():
 	name_lbl.text = profile_data.get_title_f()
 	height_lbl.text = profile_data.get_height_f()
-	weight_lbl.text = profile_data.get_weight_f()
 	hobbies.text = profile_data.get_hobbies_f()
 	smokes_lbl.text = profile_data.get_smokes_f()
 	drinks_lbl.text = profile_data.get_drinks_f()

@@ -40,7 +40,7 @@ func start():
 	
 	progress_bar.modulate = COLOR_GOOD
 	
-	current_client = _load_client_data()
+	current_client = gen_client_data()
 	sidebar.setup(current_client)
 	sidebar.update_stats(curr_round, num_rounds, total_score)
 	deck.start(current_client)
@@ -74,35 +74,39 @@ func _process(delta: float):
 		submit_button.disabled = true
 
 # TODO implement with premade data
-func _load_client_data() -> ProfileData:
-	var client = ProfileData.new()
-	client.profile_name = ["Alex", "Jordan", "Taylor", "Avery", "Riley", "Logan", "River", "Charlie", "Parker", "Rowen", "Harper", "Cameron", "Jamie", "Kelly", "Kris", "Terry", "Shannon"].pick_random()
-	client.age = randi_range(22, 40)
-	client.height_cm = randi_range(150, 180)
-	client.smokes = ProfileData.pick_smoke_habit()
-	client.drinks = ProfileData.pick_drink_habit()
+func gen_client_data() -> ProfileData:
+	var client = ProfileData.create_random()
 
-	client.min_age = client.age - 5
-	client.max_age = client.age + 7
-	client.age_negotiable = [true, false].pick_random()
+	client.min_age = max(18, client.age - 8)
+	client.max_age = min(50, client.age + 4)
+	if randf() < 0.3:
+		client.min_age = 18
+		client.max_age = 24
+	elif randf() < 0.1:
+		client.min_age = 38
+		client.max_age = 50
 
-	if randf() < 0.4:
-		client.min_height = client.height_cm
+	client.min_height = 160
+	client.max_height = 190
+	if randf() < 0.2:
+		client.min_height = 185
 		client.max_height = 210
-		client.height_negotiable = false
-	else:
+	elif randf() < 0.2:
 		client.min_height = 150
-		client.max_height = 210
-		client.height_negotiable = true
+		client.max_height = 170
 
 	if client.smokes == ProfileData.Habit.NO and randf() < 0.7:
 		client.smokers_welcome = false
 	else:
 		client.smokers_welcome = true
+	
+	if client.drinks == ProfileData.Habit.NO and randf() < 0.3:
+		client.alcoholics_welcome = false
+	else:
+		client.alcoholics_welcome = true
 
-	client.dealbreakers = ProfileData.pick_hobbies(randi_range(1, 2))
-	client.likes = ProfileData.pick_likes(5).filter(func(h): return h not in client.dealbreakers).slice(0, randi_range(1, 2))
-	client.dislikes = ProfileData.pick_aversions(5).filter(func(h): return h not in client.dealbreakers + (client.likes)).slice(0, randi_range(1, 2))
+	client.likes = ProfileData.pick_likes(randi_range(2, 4))
+	client.dislikes = ProfileData.pick_aversions(randi_range(2, 4), client.likes)
 
 	return client
 
@@ -110,7 +114,7 @@ func _on_timer_out():
 	set_process(false)
 	_on_submit_pressed()
 
-@export var no_selection_penalty = 30
+@export var no_selection_penalty = 50
 func _on_submit_pressed():
 	submit_button.disabled = true
 	deck.freeze()
@@ -174,46 +178,38 @@ func calc_score(selected_cards: Array[ProfileCard]) -> int:
 		if score < worst_score:
 			if score < best_score or worst_match_phrase == "":
 				worst_score = score
-				worst_match_phrase = "[color=TOMATO]%s[/color] couldn't vibe with [color=TOMATO]%s[/color]..." % [current_client.profile_name, data.profile_name]
+				if data.age < 18:
+					worst_match_phrase = "[color=TOMATO]%s[/color] is underaged..." % data.profile_name
+				else:
+					worst_match_phrase = "[color=TOMATO]%s[/color] couldn't vibe with [color=TOMATO]%s[/color]..." % [current_client.profile_name, data.profile_name]
 	return round_total
 
-@export var hobby_score = 3
-@export var hobby_penalty = 10
-@export var age_score = 20
-@export var height_score = 15
-@export var height_penalty = 15
-@export var smoke_penalty = 60
-@export var alchohol_penalty = 60
-
+@export var reward = 10;
+@export var additional_reward = 5;
+@export var penalty = -30;
 func get_compatibility_score(client: ProfileData, candidate: ProfileData) -> int:
-	var score = 0
-
+	var score = reward
 	for hobby in candidate.hobbies:
 		if hobby in client.likes:
-			score += hobby_score
+			score += additional_reward
 		if hobby in client.dislikes:
-			score -= hobby_penalty
+			return penalty
 	
 	if candidate.age < 18:
 		return -10000 # instant death
-	if candidate.age >= client.min_age and candidate.age <= client.max_age:
-		score += 20
-		var age_gap = abs(candidate.age - client.age)
-		score += max(0, 10 - age_gap)
-	else:
-		var out_of_range = min(abs(candidate.age - client.min_age), abs(candidate.age - client.max_age))
-		var penalty = out_of_range * 2
-		score -= (penalty * 0.5) if client.age_negotiable else penalty
+	if candidate.age < client.min_age or candidate.age > client.max_age:
+		return penalty
 	
-	if candidate.height_cm >= client.min_height and candidate.height_cm <= client.max_height:
-		score += height_score
-	else:
-		score -= height_penalty if client.height_negotiable else height_penalty * 2
+	if candidate.height_cm < client.min_height or candidate.height_cm > client.max_height:
+		return penalty
 	
 	if !client.smokers_welcome and candidate.smokes != ProfileData.Habit.NO:
-		score -= 60
+		return penalty
 	
 	if !client.alcoholics_welcome and candidate.drinks != ProfileData.Habit.NO:
-		score -= 60
+		return penalty
+
+	if client.drinks == candidate.drinks && client.smokes == candidate.smokes:
+		score += additional_reward * 2
 	
-	return roundi(score)
+	return score 
