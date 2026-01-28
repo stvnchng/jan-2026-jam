@@ -63,6 +63,7 @@ func reset():
 	summary_node.visible = false
 
 func start():
+	submit_button.visible = true 
 	progress_bar.max_value = round_time
 	progress_bar.value = round_time
 	time_left = round_time
